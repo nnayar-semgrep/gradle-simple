@@ -25,6 +25,10 @@ jobs:
         run: chmod +x gradlew
       - name: Build Dependency Lock File
         run: ./gradlew dependencies --write-locks
+      - name: Display 
+        run: ls -lah
+      - name: Display 
+        run: tree
       - name: Upload Gradle Lock File
         uses: actions/upload-artifact@v4
         with:
