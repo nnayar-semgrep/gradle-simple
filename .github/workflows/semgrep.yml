@@ -9,32 +9,33 @@ on:
   schedule:
   # random HH:MM to avoid a load spike on GitHub Actions at 00:00
   - cron: 05 5 * * 1
+
 name: Semgrep
 jobs:
-  buildGradleLockFile: 
-      runs-on: ubuntu-latest
-      steps:
+  buildGradleLockFile:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      # - name: Build with Gradle
-      #   run: gradle clean compileJava
+      - name: Make gradlew executable
+        run: chmod +x gradlew
       - name: Build Dependency Lock File
-        run: gradle dependencies --write-locks
+        run: ./gradlew dependencies --write-locks
       - name: Upload Gradle Lock File
         uses: actions/upload-artifact@v4
         with:
-          name: gradlelockfile
-          path: gradle.lockfile
+          name: gradlelockfiles
+          path: gradle/dependency-locks/
   semgrep:
     needs: buildGradleLockFile
     name: Scan
     runs-on: ubuntu-24.04
     env:
-      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+      SEMGREP_APP_TOKEN: $ secrets.SEMGREP_APP_TOKEN 
     container:
       image: returntocorp/semgrep
     steps:
@@ -42,5 +43,7 @@ jobs:
       - name: Download artifact from previous job
         uses: actions/download-artifact@v4
         with:
-          name: gradlelockfile
+          name: gradlelockfiles
+          path: gradle/dependency-locks/
       - run: semgrep ci
+
