@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gradlelockfiles
-          path: gradle/dependency-locks/
+          path: gradle.lockfile
   semgrep:
     needs: buildGradleLockFile
     name: Scan
@@ -44,6 +44,5 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: gradlelockfiles
-          path: gradle/dependency-locks/
       - run: semgrep ci
 
